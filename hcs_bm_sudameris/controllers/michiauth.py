@@ -19,7 +19,7 @@ class BM_OfficialSalary_MichiAuth(http.Controller):
         try:
             d = json.dumps(kwargs)
             h = request.httprequest.headers
-            r = requests.post(deviceIdRequestUrl, data=d, headers=h, verify=False, timeout=3)
+            r = requests.post(deviceIdRequestUrl, data=d, headers=h, verify=False)
             response = json.loads(r.content)
             _logger.debug(['device_id', response])
             return {'status': r.status_code, 'response': response, 'message': 'Success'}
@@ -31,7 +31,7 @@ class BM_OfficialSalary_MichiAuth(http.Controller):
         try:
             d = json.dumps(kwargs)
             h = request.httprequest.headers
-            r = requests.post(authRequestUrlUser, data=d, headers=h, verify=False, timeout=3)
+            r = requests.post(authRequestUrlUser, data=d, headers=h, verify=False)
             response = json.loads(r.content)
             _logger.debug(['user_login', response])
             return {'status': r.status_code, 'response': response, 'message': 'Success'}
@@ -43,7 +43,7 @@ class BM_OfficialSalary_MichiAuth(http.Controller):
         try:
             d = json.dumps(kwargs)
             h = request.httprequest.headers
-            r = requests.post(authRequestUrlOperator, data=d, headers=h, verify=False, timeout=3)
+            r = requests.post(authRequestUrlOperator, data=d, headers=h, verify=False)
             response = json.loads(r.content)
             _logger.debug(['operator_login', response])
             return {'status': r.status_code, 'response': response, 'message': 'Success'}
