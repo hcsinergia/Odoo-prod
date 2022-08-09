@@ -46,29 +46,40 @@ class ApiWsConsultaCuentaServicio:
             "Mensaje": "",
             "NroContrato": "",
             "DesContrato": "",
-            "Datos": "",
-            "Erroresnegocio": ""
+            "Canales": "",
+            "Datos": {},
+            "Erroresnegocio": "",
+            "debug": ""
         }
 
         try:
             request = requests.post(self.request_url, data=request_body, headers={
                 'Content-Type': 'application/json'}, verify=False, timeout=3)
             request = request.text
+            response['debug'] = request
             logger.info([self.service, request])
             request = json.loads(request)
 
-            response["Mensaje"] = request["Mensaje"]
-            response["NroContrato"] = request["NroContrato"]
-            response["DesContrato"] = request["DesContrato"]
-            response["Datos"] = request["Datos"]
             for BTErrorNegocio in request['Erroresnegocio']['BTErrorNegocio']:
                 response["Erroresnegocio"] = BTErrorNegocio['Descripcion']
 
+            if not response['Erroresnegocio']:
+                if 'NroContrato' in request:
+                    response["NroContrato"] = request["NroContrato"]
+                if 'DesContrato' in request:
+                    response["DesContrato"] = request["DesContrato"]
+                if 'Canales' in request:
+                    response["Canales"] = request["Canales"]
+                response["Mensaje"] = request["Mensaje"]
+                response["Datos"] = request["Datos"]
+
         except Exception as e:
             exp_message = str(e)
-            if 'HTTPConnectionPool' in exp_message: # HTTPConnectionPool == Conection Timeout
+            if 'HTTPConnectionPool' in exp_message:  # HTTPConnectionPool == Conection Timeout
                 exp_message = '(HTTPConnectionPool): No se puede conectar al banco'
-            logger.error([self.service, 'Exception', exp_message], exc_info=True)
+            logger.error([self.service, 'Exception',
+                         exp_message], exc_info=True)
+            response['debug'] = exp_message
             response["Erroresnegocio"] = exp_message
 
         return response
