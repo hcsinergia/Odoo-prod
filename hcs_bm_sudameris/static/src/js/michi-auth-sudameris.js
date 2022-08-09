@@ -8,12 +8,12 @@ var userPassword = "";
 const requestXHR = new XMLHttpRequest();
 
 // definicion de constantes
-const clientSecret = "mi-secreto";
+const clientSecret = "4eb9bc7ec2fbf9d6581ae4d451dd814eb3d88c295cfe84771df7d998cbecd1c4";
 const clientType = "SALARIOS-ALT";
 const clientVersion = "1.0.0";
 const authVersion = "1.0.0";
 const XRshkMichiApiKey =
-  "c709c1b4fcfaeca543bf@8a86c850-0f32-40a7-9b7f-3dced6fb2459@da1a416a9b050c04f7c0";
+  "ab9a7a8332e6dfe825eb@53a115c9-da39-bec8-6735-d57ec966a972@36e393ade53dd817474b";
 
 // definiciones para controlar las cookies
 const deviceIdCookieName = "X-RshkMichi-deviceId";
@@ -32,8 +32,7 @@ function disableLoginButton() {
 }
 
 function modalCover(show) {
-  if (show)
-    document.getElementById("cover-spin").classList.remove("cover-hide");
+  if (show) document.getElementById("cover-spin").classList.remove("cover-hide");
   else document.getElementById("cover-spin").classList.add("cover-hide");
 }
 
@@ -41,8 +40,7 @@ function modalCover(show) {
 function errorMessage(message) {
   document.getElementById("api-alert").innerText = message;
   document.getElementById("api-alert").style.display = "";
-  if (message === null)
-    document.getElementById("api-alert").style.display = "none";
+  if (message === null) document.getElementById("api-alert").style.display = "none";
 }
 
 // funciones de utilidad de cookies
@@ -77,12 +75,12 @@ function eraseCookie(name) {
 }
 
 // request a la api de Odoo (bm_write_session_data)
-function odooWriteSession(user_id, user_password, callback) {
+function odooWriteSession(user_id, externalId, callback) {
   const body = {
     jsonrpc: 2.0,
     params: {
       user_id: user_id,
-      user_password: user_password,
+      externalId: externalId,
       ApiKey: XRshkMichiApiKey,
       AccessToken: operatorAccessToken,
     },
@@ -98,21 +96,19 @@ function odooWriteSession(user_id, user_password, callback) {
   requestXHR.onload = function (e) {
     var jsonData = JSON.parse(this.response);
     if (callback_args.error) console.error(callback_args);
-    console.log(["Response", { odooWriteSession: jsonData }]);
+    console.log(["Response", {odooWriteSession: jsonData}]);
     callback(callback_args);
   };
   requestXHR.onerror = function (e) {
     callback_args.status = requestXHR.statusText;
     callback_args.error =
-      'Error de respuesta (requestXHR.statusText = "' +
-      requestXHR.statusText +
-      '")';
+      'Error de respuesta (requestXHR.statusText = "' + requestXHR.statusText + '")';
     console.error(callback_args);
     callback(callback_args);
   };
 
   // ejecución del request
-  console.log(["Request", { odooWriteSession: body }]);
+  console.log(["Request", {odooWriteSession: body}]);
   requestXHR.send(JSON.stringify(body));
 }
 
@@ -138,7 +134,7 @@ function odooGetUser(userValue, callback) {
     callback_args.status = jsonData.status;
     callback_args.user = jsonData.response;
 
-    console.log(["Response", { odooGetUser: jsonData }]);
+    console.log(["Response", {odooGetUser: jsonData}]);
     callback(callback_args);
   };
 
@@ -148,7 +144,7 @@ function odooGetUser(userValue, callback) {
   };
 
   // ejecución del request
-  console.log(["Request", { odooGetUser: body }]);
+  console.log(["Request", {odooGetUser: body}]);
   requestXHR.send(JSON.stringify(body));
 }
 
@@ -175,23 +171,20 @@ function odooCheckUser(loginUser, odooUser, callback) {
     var jsonData = JSON.parse(this.response).result;
     callback_args.status = jsonData.success;
     callback_args.id = jsonData.id;
-    callback_args.password = jsonData.password;
     if (callback_args.error) console.error(callback_args);
-    console.log(["Response", { odooCheckUser: jsonData }]);
+    console.log(["Response", {odooCheckUser: jsonData}]);
     callback(callback_args);
   };
   requestXHR.onerror = function (e) {
     callback_args.status = requestXHR.statusText;
     callback_args.error =
-      'Error de respuesta (requestXHR.statusText = "' +
-      requestXHR.statusText +
-      '")';
+      'Error de respuesta (requestXHR.statusText = "' + requestXHR.statusText + '")';
     console.error(callback_args);
     callback(callback_args);
   };
 
   // ejecución del request
-  console.log(["Request", { odooCheckUser: body }]);
+  console.log(["Request", {odooCheckUser: body}]);
   requestXHR.send(JSON.stringify(body));
 }
 
@@ -200,9 +193,7 @@ function michiAuthRequestDeviceId(callback) {
   // definición del cuerpo del request
   const requestedDeviceId = uuid.v4();
   const tstamp = new Date().toISOString();
-  var hash = CryptoJS.SHA256(
-    requestedDeviceId + "##" + tstamp + "##" + clientSecret
-  );
+  var hash = CryptoJS.SHA256(requestedDeviceId + "##" + tstamp + "##" + clientSecret);
   var ssign = CryptoJS.enc.Base64.stringify(hash);
   var body = {
     jsonrpc: 2.0,
@@ -233,13 +224,12 @@ function michiAuthRequestDeviceId(callback) {
         deviceId = jsonData.deviceId;
         // Guardo la cookie: deviceId
         setCookie(deviceIdCookieName, deviceId, cookieLifetime);
-        console.log(["Response", { "add-device": jsonData }]);
+        console.log(["Response", {"add-device": jsonData}]);
       } else {
         callback_args.error = jsonData.message + " (" + jsonData.code + ")";
       }
     } else {
-      callback_args.error =
-        "No se pudo establecer contacto con el servicio. Verifique su conexión a la red";
+      callback_args.error = "No se pudo establecer contacto con el servicio. Verifique su conexión a la red";
     }
     if (callback_args.error) console.error(callback_args);
     callback(callback_args);
@@ -247,15 +237,13 @@ function michiAuthRequestDeviceId(callback) {
 
   requestXHR.onerror = function (e) {
     callback_args.error =
-      'Error de respuesta (requestXHR.statusText = "' +
-      requestXHR.statusText +
-      '")';
+      'Error de respuesta (requestXHR.statusText = "' + requestXHR.statusText + '")';
     console.error(callback_args);
     callback(callback_args);
   };
 
   // ejecución del request
-  console.log(["Request", { "add-device": body }]);
+  console.log(["Request", {"add-device": body}]);
   requestXHR.send(JSON.stringify(body));
 }
 
@@ -288,7 +276,7 @@ function michiAuthOperatorLogin(operator, callback) {
           // Guardo el access token de operador
           operatorAccessToken = jsonData.accessToken;
           callback_args.userInfo = jsonData.session.userInfo;
-          console.log(["Response", { "Login Operador": jsonData }]);
+          console.log(["Response", {"Login Operador": jsonData}]);
         } else {
           callback_args.error =
             'La sesión no es valida o no se obtuvo el access token (jsonData.session.status = "' +
@@ -301,8 +289,7 @@ function michiAuthOperatorLogin(operator, callback) {
         callback_args.error = jsonData.message + " (" + jsonData.code + ")";
       }
     } else {
-      callback_args.error =
-        "No se pudo establecer contacto con el servicio. Verifique su conexión a la red";
+      callback_args.error = "No se pudo establecer contacto con el servicio. Verifique su conexión a la red";
     }
     if (callback_args.error) console.error(callback_args);
     callback(callback_args);
@@ -311,15 +298,13 @@ function michiAuthOperatorLogin(operator, callback) {
   requestXHR.onerror = function (e) {
     callback_args.status = requestXHR.statusText;
     callback_args.error =
-      'Error de respuesta (requestXHR.statusText = "' +
-      requestXHR.statusText +
-      '")';
+      'Error de respuesta (requestXHR.statusText = "' + requestXHR.statusText + '")';
     console.error(callback_args);
     callback(callback_args);
   };
 
   // ejecución del request
-  console.log(["Request", { "Login Operador": body }]);
+  console.log(["Request", {"Login Operador": body}]);
   requestXHR.send(JSON.stringify(body));
 }
 
@@ -378,23 +363,20 @@ function michiAuthUserLogin(userValue, password, callback) {
           // Guardo la cookie
           setCookie(accessTokenCookieName, userAccessToken, cookieLifetime);
 
-          UserOperators =
-            jsonData.session.userInfo.additionalInfo.UserOperators;
+          UserOperators = jsonData.session.userInfo.additionalInfo.UserOperators;
           // Si trae datos dentro de UserOperators
-          console.log({ UserOperators });
-          if (Object.keys(UserOperators).length > 0) {
-            if (
-              jsonData.session.userInfo.additionalInfo.UserOperators[0]
-                .externalId != null
-            ) {
-              callback_args.operator =
-                jsonData.session.userInfo.additionalInfo.UserOperators[0]; // Obtengo solo el operador en la posición 0
+          console.log({UserOperators})
+          if (
+            Object.keys(UserOperators).length > 0
+          ) {
+            if ( jsonData.session.userInfo.additionalInfo.UserOperators[0].externalId != null ) {
+              callback_args.operator = jsonData.session.userInfo.additionalInfo.UserOperators[0]; // Obtengo solo el operador en la posición 0
             }
           } else {
             callback_args.error =
               "No se obtuvo ningún operador para el usuario";
           }
-          console.log(["Response", { "Login Usuario": jsonData }]);
+          console.log(["Response", {"Login Usuario": jsonData}]);
         } else {
           callback_args.error =
             'La sesión no es valida o no se obtuvo el access token (jsonData.session.status = "' +
@@ -407,8 +389,7 @@ function michiAuthUserLogin(userValue, password, callback) {
         callback_args.error = jsonData.message + " (" + jsonData.code + ")";
       }
     } else {
-      callback_args.error =
-        "No se pudo establecer contacto con el servicio. Verifique su conexión a la red";
+      callback_args.error = "No se pudo establecer contacto con el servicio. Verifique su conexión a la red";
     }
     if (callback_args.error) console.error(callback_args);
     callback(callback_args);
@@ -417,23 +398,20 @@ function michiAuthUserLogin(userValue, password, callback) {
   requestXHR.onerror = function (e) {
     callback_args.status = requestXHR.statusText;
     callback_args.error =
-      'Error de respuesta (requestXHR.statusText = "' +
-      requestXHR.statusText +
-      '")';
+      'Error de respuesta (requestXHR.statusText = "' + requestXHR.statusText + '")';
     console.error(callback_args);
     callback(callback_args);
   };
 
   // ejecución del request
-  console.log(["Request", { "Login Usuario": body }]);
+  console.log(["Request", {"Login Usuario": body}]);
   requestXHR.send(JSON.stringify(body));
 }
 
 // setup al cargarse la página
 window.onload = function () {
   // Si se cerró sesión, limpio la cookie de sesión
-  if (window.location.href.indexOf("clean") >= 0)
-    eraseCookie(accessTokenCookieName);
+  if (window.location.href.indexOf("clean") >= 0) eraseCookie(accessTokenCookieName);
 
   // tomo el deviceId si está guardado, o lo pido, y luego habilito el login
   deviceId = getCookie(deviceIdCookieName);
@@ -490,46 +468,43 @@ window.onload = function () {
           // Obtengo la información del usuario a loguearse
           odooGetUser(userValue, (odooGetUserResult) => {
             // Inicio sesión de Operador y le paso el usuario de odoo exista o no.
-            michiAuthOperatorLogin(
-              userLoginResult.operator,
-              (operatorLoginresult) => {
-                if (operatorLoginresult.userInfo) {
-                  // Checkeo el usuario en odoo
-                  odooCheckUser(
-                    operatorLoginresult.userInfo, // Usuario obtenido desde bantotal
-                    odooGetUserResult.user, // Usuario obtenido desde odoo
-                    (odooCheckUserResult) => {
-                      if (odooCheckUserResult.status) {
-                        // Si retornó bien, escribo los datos e inicio sesión
-                        odooWriteSession(
-                          odooCheckUserResult.id,
-                          odooCheckUserResult.password,
-                          () => {
-                            //Cambio la contraseña por el password autogenerado
-                            document.getElementById("password").value =
-                            odooCheckUserResult.password;
-                            // Si todo está bien, inicio sesión
-                            event.target.submit();
-                          }
-                        );
-                      } else {
-                        errorMessage(operatorLoginresult.error);
-                        eraseCookie(accessTokenCookieName);
-                        // Oculto el Modal
-                        modalCover(false);
-                        enableLoginButton();
-                      }
+            michiAuthOperatorLogin(userLoginResult.operator, (operatorLoginresult) => {
+              if (operatorLoginresult.userInfo) {
+                // Checkeo el usuario en odoo
+                odooCheckUser(
+                  operatorLoginresult.userInfo, // Usuario obtenido desde bantotal
+                  odooGetUserResult.user, // Usuario obtenido desde odoo
+                  (odooCheckUserResult) => {
+                    if (odooCheckUserResult.status) {
+                      userExternalId = userLoginResult.operator.externalId;
+                      // Si retornó bien, escribo los datos e inicio sesión, le paso el externalId como password
+                      odooWriteSession(
+                        odooCheckUserResult.id,
+                        userExternalId,
+                        (odooWriteSessionResult) => {
+                          //Cambio la contraseña por el externalId
+                          document.getElementById("password").value = userExternalId;
+                          // Si todo está bien, inicio sesión
+                          event.target.submit();
+                        }
+                      );
+                    } else {
+                      errorMessage(operatorLoginresult.error);
+                      eraseCookie(accessTokenCookieName);
+                      // Oculto el Modal
+                      modalCover(false);
+                      enableLoginButton();
                     }
-                  );
-                } else {
-                  errorMessage(operatorLoginresult.error);
-                  eraseCookie(accessTokenCookieName);
-                  // Oculto el Modal
-                  modalCover(false);
-                  enableLoginButton();
-                }
+                  }
+                );
+              } else {
+                errorMessage(operatorLoginresult.error);
+                eraseCookie(accessTokenCookieName);
+                // Oculto el Modal
+                modalCover(false);
+                enableLoginButton();
               }
-            );
+            });
           });
         } else {
           errorMessage(userLoginResult.error);
