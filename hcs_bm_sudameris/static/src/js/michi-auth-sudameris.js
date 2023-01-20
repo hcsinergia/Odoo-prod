@@ -13,7 +13,7 @@ const clientType = "SALARIOS-ALT";
 const clientVersion = "1.0.0";
 const authVersion = "1.0.0";
 const XRshkMichiApiKey =
-  "c709c1b4fcfaeca543bf@8a86c850-0f32-40a7-9b7f-3dced6fb2459@da1a416a9b050c04f7c0";
+  "ab9a7a8332e6dfe825eb@53a115c9-da39-bec8-6735-d57ec966a972@36e393ade53dd817474b";
 const callbackErrorMsg = 'Ocurrió un error inesperado. Favor contactar con nuestro Call Center llamando al teléfono <a href="tel:+595214166000">416-6000</a> o escribanos al correo <a href="mailto:sac@sudameris.com.py">sac@sudameris.com.py</a>.'
 
 // definiciones para controlar las cookies
